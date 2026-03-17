@@ -1,0 +1,954 @@
+'use client'
+
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { 
+  Brain, 
+  Users, 
+  Calendar, 
+  BarChart3, 
+  MessageSquare, 
+  FileText,
+  Clock,
+  User,
+  Star,
+  AlertTriangle,
+  TrendingUp,
+  Heart,
+  Shield,
+  Video,
+  Phone,
+  Activity,
+  Target,
+  CheckCircle,
+  Eye,
+  Edit,
+  Download,
+  X
+} from 'lucide-react'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts'
+
+interface Client {
+  id: string
+  name: string
+  age: number
+  email: string
+  phone: string
+  riskLevel: 'Mild' | 'Moderate' | 'Severe'
+  lastSession: string
+  nextSession: string
+  progress: number
+  aiInsights: string[]
+  screeningScore: number
+  chatbotInteractions: number
+  treatmentJourney: {
+    startDate: string
+    currentPhase: string
+    milestones: string[]
+    nextMilestone: string
+  }
+  image: string
+}
+
+interface Session {
+  id: string
+  clientName: string
+  date: string
+  time: string
+  type: 'virtual' | 'in-person'
+  status: 'upcoming' | 'completed' | 'in-progress'
+  duration: number
+  notes?: string
+}
+
+interface AIReport {
+  id: string
+  clientId: string
+  clientName: string
+  screeningResults: {
+    score: number
+    riskLevel: string
+    date: string
+  }
+  chatbotAnalysis: {
+    sentiment: 'Positive' | 'Neutral' | 'Negative'
+    topics: string[]
+    frequency: number
+    lastInteraction: string
+  }
+  recommendations: string[]
+  generatedDate: string
+}
+
+const clients: Client[] = [
+  {
+    id: '1',
+    name: 'Alex Johnson',
+    age: 28,
+    email: 'alex.johnson@email.com',
+    phone: '+1 (555) 123-4567',
+    riskLevel: 'Moderate',
+    lastSession: '2024-01-15',
+    nextSession: '2024-01-22',
+    progress: 75,
+    screeningScore: 18,
+    chatbotInteractions: 24,
+    aiInsights: [
+      'Shows improvement in sleep patterns',
+      'Reduced anxiety symptoms by 30%',
+      'Recommended: Continue CBT exercises'
+    ],
+    treatmentJourney: {
+      startDate: '2024-01-01',
+      currentPhase: 'Active Treatment',
+      milestones: ['Initial Assessment', 'Treatment Plan Created', 'Progress Review'],
+      nextMilestone: 'Mid-term Evaluation'
+    },
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face'
+  },
+  {
+    id: '2',
+    name: 'Sarah Chen',
+    age: 34,
+    email: 'sarah.chen@email.com',
+    phone: '+1 (555) 987-6543',
+    riskLevel: 'Mild',
+    lastSession: '2024-01-18',
+    nextSession: '2024-01-25',
+    progress: 90,
+    screeningScore: 12,
+    chatbotInteractions: 18,
+    aiInsights: [
+      'Excellent progress in stress management',
+      'Consistent with mindfulness practice',
+      'Recommended: Gradual reduction in session frequency'
+    ],
+    treatmentJourney: {
+      startDate: '2024-01-01',
+      currentPhase: 'Maintenance Phase',
+      milestones: ['Initial Assessment', 'Treatment Plan Created', 'Progress Review', 'Mid-term Evaluation'],
+      nextMilestone: 'Treatment Completion'
+    },
+    image: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face'
+  },
+  {
+    id: '3',
+    name: 'Michael Rodriguez',
+    age: 42,
+    email: 'michael.rodriguez@email.com',
+    phone: '+1 (555) 456-7890',
+    riskLevel: 'Severe',
+    lastSession: '2024-01-20',
+    nextSession: '2024-01-23',
+    progress: 45,
+    screeningScore: 28,
+    chatbotInteractions: 42,
+    aiInsights: [
+      'Requires intensive support',
+      'Medication compliance improving',
+      'Recommended: Increase session frequency'
+    ],
+    treatmentJourney: {
+      startDate: '2024-01-01',
+      currentPhase: 'Intensive Treatment',
+      milestones: ['Initial Assessment', 'Treatment Plan Created', 'Crisis Intervention'],
+      nextMilestone: 'Stabilization Review'
+    },
+    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face'
+  }
+]
+
+const sessions: Session[] = [
+  {
+    id: '1',
+    clientName: 'Alex Johnson',
+    date: '2024-01-22',
+    time: '10:00 AM',
+    type: 'virtual',
+    status: 'upcoming',
+    duration: 50
+  },
+  {
+    id: '2',
+    clientName: 'Sarah Chen',
+    date: '2024-01-23',
+    time: '2:00 PM',
+    type: 'in-person',
+    status: 'upcoming',
+    duration: 50
+  },
+  {
+    id: '3',
+    clientName: 'Michael Rodriguez',
+    date: '2024-01-23',
+    time: '4:00 PM',
+    type: 'virtual',
+    status: 'upcoming',
+    duration: 60
+  }
+]
+
+const aiReports: AIReport[] = [
+  {
+    id: '1',
+    clientId: '1',
+    clientName: 'Alex Johnson',
+    screeningResults: {
+      score: 18,
+      riskLevel: 'Moderate',
+      date: '2024-01-15'
+    },
+    chatbotAnalysis: {
+      sentiment: 'Positive',
+      topics: ['Anxiety Management', 'Sleep Issues', 'Work Stress'],
+      frequency: 24,
+      lastInteraction: '2024-01-20'
+    },
+    recommendations: [
+      'Continue CBT exercises for anxiety',
+      'Focus on sleep hygiene techniques',
+      'Monitor work-related stress triggers'
+    ],
+    generatedDate: '2024-01-21'
+  },
+  {
+    id: '2',
+    clientId: '2',
+    clientName: 'Sarah Chen',
+    screeningResults: {
+      score: 12,
+      riskLevel: 'Mild',
+      date: '2024-01-18'
+    },
+    chatbotAnalysis: {
+      sentiment: 'Positive',
+      topics: ['Stress Management', 'Mindfulness', 'Self-Care'],
+      frequency: 18,
+      lastInteraction: '2024-01-21'
+    },
+    recommendations: [
+      'Excellent progress - consider maintenance phase',
+      'Continue mindfulness practices',
+      'Gradual reduction in session frequency'
+    ],
+    generatedDate: '2024-01-21'
+  }
+]
+
+const progressData = [
+  { month: 'Oct', patients: 12, sessions: 45 },
+  { month: 'Nov', patients: 15, sessions: 52 },
+  { month: 'Dec', patients: 18, sessions: 58 },
+  { month: 'Jan', patients: 22, sessions: 65 }
+]
+
+const riskLevelData = [
+  { name: 'Mild', value: 45, color: '#22c55e' },
+  { name: 'Moderate', value: 35, color: '#f59e0b' },
+  { name: 'Severe', value: 20, color: '#ef4444' }
+]
+
+export default function CounselorDashboard() {
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null)
+  const [activeTab, setActiveTab] = useState('overview')
+  const [selectedReport, setSelectedReport] = useState<AIReport | null>(null)
+
+  const stats = [
+    { label: 'Active Clients', value: '22', icon: Users, color: 'text-blue-600' },
+    { label: 'Sessions This Week', value: '8', icon: Calendar, color: 'text-green-600' },
+    { label: 'AI Reports Generated', value: '156', icon: Brain, color: 'text-purple-600' },
+    { label: 'Client Satisfaction', value: '4.8/5', icon: Star, color: 'text-yellow-600' }
+  ]
+
+  const renderOverviewTab = () => (
+    <div className="grid lg:grid-cols-2 gap-8">
+      {/* Progress Charts */}
+      <motion.div
+        className="bg-white p-6 rounded-2xl shadow-lg"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Practice Growth</h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={progressData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="month" />
+            <YAxis />
+            <Tooltip />
+            <Line type="monotone" dataKey="patients" stroke="#3b82f6" strokeWidth={2} />
+            <Line type="monotone" dataKey="sessions" stroke="#10b981" strokeWidth={2} />
+          </LineChart>
+        </ResponsiveContainer>
+      </motion.div>
+
+      {/* Risk Level Distribution */}
+      <motion.div
+        className="bg-white p-6 rounded-2xl shadow-lg"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Risk Level Distribution</h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <PieChart>
+            <Pie
+              data={riskLevelData}
+              cx="50%"
+              cy="50%"
+              outerRadius={80}
+              dataKey="value"
+              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+            >
+              {riskLevelData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </ResponsiveContainer>
+      </motion.div>
+    </div>
+  )
+
+  const renderClientsTab = () => (
+    <div className="space-y-6">
+      {/* Client Search and Filters */}
+      <div className="bg-white p-6 rounded-2xl shadow-lg">
+        <div className="flex flex-col lg:flex-row gap-4 mb-6">
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="Search clients by name or email..."
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="flex gap-2">
+            <select className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">All Risk Levels</option>
+              <option value="Mild">Mild</option>
+              <option value="Moderate">Moderate</option>
+              <option value="Severe">Severe</option>
+            </select>
+            <select className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">All Status</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Client Cards */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        {clients.map((client) => (
+          <motion.div
+            key={client.id}
+            className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: clients.indexOf(client) * 0.1 }}
+            onClick={() => setSelectedClient(client)}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <img
+                  src={client.image}
+                  alt={client.name}
+                  className="w-12 h-12 rounded-full object-cover mr-3"
+                />
+                <div>
+                  <h3 className="font-semibold text-gray-900">{client.name}</h3>
+                  <p className="text-sm text-gray-600">{client.age} years old</p>
+                </div>
+              </div>
+              <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                client.riskLevel === 'Mild' ? 'bg-green-100 text-green-800' :
+                client.riskLevel === 'Moderate' ? 'bg-yellow-100 text-yellow-800' :
+                'bg-red-100 text-red-800'
+              }`}>
+                {client.riskLevel}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900">{client.progress}%</div>
+                <div className="text-sm text-gray-600">Progress</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900">{client.screeningScore}</div>
+                <div className="text-sm text-gray-600">Screening Score</div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Last Session:</span>
+                <span className="font-medium">{new Date(client.lastSession).toLocaleDateString()}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Next Session:</span>
+                <span className="font-medium">{new Date(client.nextSession).toLocaleDateString()}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Chatbot Interactions:</span>
+                <span className="font-medium">{client.chatbotInteractions}</span>
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-4 border-t">
+              <button className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
+                <Video className="h-4 w-4" />
+                Start Session
+              </button>
+              <button className="flex-1 bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
+                <Eye className="h-4 w-4" />
+                View Details
+              </button>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  )
+
+  const renderVirtualCounselingTab = () => (
+    <div className="space-y-6">
+      {/* Active Sessions */}
+      <div className="bg-white p-6 rounded-2xl shadow-lg">
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">Active Virtual Sessions</h3>
+        <div className="space-y-4">
+          {sessions.filter(s => s.status === 'in-progress').map((session) => (
+            <div key={session.id} className="border border-gray-200 rounded-lg p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center">
+                  <div className="flex items-center justify-center w-10 h-10 bg-green-100 rounded-full mr-3">
+                    <Video className="h-5 w-5 text-green-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">{session.clientName}</h4>
+                    <p className="text-sm text-gray-600">
+                      {new Date(session.date).toLocaleDateString()} at {session.time}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">{session.duration} min</span>
+                  <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    session.status === 'in-progress' ? 'bg-green-100 text-green-800' :
+                    session.status === 'completed' ? 'bg-gray-100 text-gray-800' :
+                    'bg-blue-100 text-blue-800'
+                  }`}>
+                    {session.status}
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                  <Video className="h-4 w-4" />
+                  Join Session
+                </button>
+                <button className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4" />
+                  Chat
+                </button>
+                <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Notes
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Session Queue */}
+      <div className="bg-white p-6 rounded-2xl shadow-lg">
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">Session Queue</h3>
+        <div className="space-y-4">
+          {sessions.filter(s => s.status === 'upcoming').map((session) => (
+            <div key={session.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full mr-3">
+                    {session.type === 'virtual' ? (
+                      <Video className="h-5 w-5 text-blue-600" />
+                    ) : (
+                      <Phone className="h-5 w-5 text-blue-600" />
+                    )}
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">{session.clientName}</h4>
+                    <p className="text-sm text-gray-600">
+                      {new Date(session.date).toLocaleDateString()} at {session.time}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">{session.duration} min</span>
+                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                    Upcoming
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+
+  const renderAIReportsTab = () => (
+    <div className="space-y-6">
+      {/* Report Generation Controls */}
+      <div className="bg-white p-6 rounded-2xl shadow-lg">
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">AI Report Generation</h3>
+        <div className="flex flex-col lg:flex-row gap-4">
+          <button className="bg-purple-500 hover:bg-purple-600 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center gap-2">
+            <Brain className="h-5 w-5" />
+            Generate New Reports
+          </button>
+          <button className="bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center gap-2">
+            <Download className="h-5 w-5" />
+            Export All Reports
+          </button>
+        </div>
+      </div>
+
+      {/* AI Reports List */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        {aiReports.map((report) => (
+          <motion.div
+            key={report.id}
+            className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: aiReports.indexOf(report) * 0.1 }}
+            onClick={() => setSelectedReport(report)}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-semibold text-gray-900">{report.clientName}</h4>
+              <div className="flex items-center gap-2">
+                <button className="text-blue-500 hover:text-blue-600 transition-colors">
+                  <Eye className="h-4 w-4" />
+                </button>
+                <button className="text-gray-500 hover:text-gray-600 transition-colors">
+                  <Download className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {/* Screening Results */}
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h5 className="font-medium text-blue-900 mb-2">Screening Results</h5>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-blue-700">Score:</span>
+                    <span className="font-medium text-blue-900">{report.screeningResults.score}</span>
+                  </div>
+                  <div>
+                    <span className="text-blue-700">Risk Level:</span>
+                    <span className="font-medium text-blue-900">{report.screeningResults.riskLevel}</span>
+                  </div>
+                </div>
+                <div className="text-xs text-blue-600 mt-2">
+                  Date: {new Date(report.screeningResults.date).toLocaleDateString()}
+                </div>
+              </div>
+
+              {/* Chatbot Analysis */}
+              <div className="bg-green-50 p-4 rounded-lg">
+                <h5 className="font-medium text-green-900 mb-2">Chatbot Analysis</h5>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-green-700">Sentiment:</span>
+                    <span className={`font-medium ${
+                      report.chatbotAnalysis.sentiment === 'Positive' ? 'text-green-600' :
+                      report.chatbotAnalysis.sentiment === 'Neutral' ? 'text-yellow-600' :
+                      'text-red-600'
+                    }`}>
+                      {report.chatbotAnalysis.sentiment}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-green-700">Topics Discussed:</span>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {report.chatbotAnalysis.topics.map((topic, index) => (
+                        <span key={index} className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+                          {topic}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-green-700">Interactions:</span>
+                    <span className="font-medium text-green-600">{report.chatbotAnalysis.frequency}</span>
+                  </div>
+                  <div className="text-xs text-green-600 mt-2">
+                    Last: {new Date(report.chatbotAnalysis.lastInteraction).toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Recommendations */}
+              <div className="bg-purple-50 p-4 rounded-lg">
+                <h5 className="font-medium text-purple-900 mb-2">AI Recommendations</h5>
+                <ul className="space-y-2 text-sm">
+                  {report.recommendations.map((rec, index) => (
+                    <li key={index} className="flex items-start">
+                      <CheckCircle className="h-4 w-4 text-purple-600 mr-2 mt-0.5 flex-shrink-0" />
+                      <span className="text-purple-700">{rec}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="text-xs text-gray-500 mt-4">
+              Generated: {new Date(report.generatedDate).toLocaleDateString()}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  )
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <Brain className="h-8 w-8 text-blue-600" />
+              <span className="ml-2 text-xl font-bold text-gray-900">MindLink Counselor</span>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center">
+                <img
+                  src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=40&h=40&fit=crop&crop=face"
+                  alt="Dr. Sarah Johnson"
+                  className="w-8 h-8 rounded-full mr-2"
+                />
+                <span className="text-sm font-medium text-gray-700">Dr. Sarah Johnson</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {stats.map((stat, index) => (
+            <motion.div
+              key={index}
+              className="bg-white p-6 rounded-2xl shadow-lg"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <div className="flex items-center">
+                <div className={`p-2 rounded-lg ${stat.color}`}>
+                  <stat.icon className="h-6 w-6" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">{stat.label}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Tabs */}
+        <div className="mb-8">
+          <nav className="flex space-x-8">
+            {[
+              { id: 'overview', label: 'Overview', icon: BarChart3 },
+              { id: 'clients', label: 'Client Management', icon: Users },
+              { id: 'virtual-counseling', label: 'Virtual Counseling', icon: Video },
+              { id: 'ai-reports', label: 'AI Reports', icon: Brain }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                  activeTab === tab.id
+                    ? 'text-blue-600 bg-blue-50'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <tab.icon className="h-4 w-4 mr-2" />
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === 'overview' && renderOverviewTab()}
+        {activeTab === 'clients' && renderClientsTab()}
+        {activeTab === 'virtual-counseling' && renderVirtualCounselingTab()}
+        {activeTab === 'ai-reports' && renderAIReportsTab()}
+      </div>
+      </div>
+
+      {/* Client Detail Modal */}
+      {selectedClient && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <motion.div
+            className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center">
+                  <img
+                    src={selectedClient.image}
+                    alt={selectedClient.name}
+                    className="w-16 h-16 rounded-full object-cover mr-4"
+                  />
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">{selectedClient.name}</h2>
+                    <p className="text-gray-600">{selectedClient.age} years old</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSelectedClient(null)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="grid lg:grid-cols-2 gap-6">
+                {/* Contact Information */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                      <div className="text-gray-900">{selectedClient.email}</div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                      <div className="text-gray-900">{selectedClient.phone}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Assessment Data */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Assessment Data</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-700">Screening Score:</span>
+                      <span className="font-medium text-gray-900">{selectedClient.screeningScore}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-700">Risk Level:</span>
+                      <span className={`font-medium ${
+                        selectedClient.riskLevel === 'Mild' ? 'text-green-600' :
+                        selectedClient.riskLevel === 'Moderate' ? 'text-yellow-600' :
+                        'text-red-600'
+                      }`}>
+                        {selectedClient.riskLevel}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-700">Progress:</span>
+                      <span className="font-medium text-gray-900">{selectedClient.progress}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-700">Chatbot Interactions:</span>
+                      <span className="font-medium text-gray-900">{selectedClient.chatbotInteractions}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+                {/* Treatment Journey */}
+                <div className="lg:col-span-2 space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Treatment Journey</h3>
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <span className="text-blue-700">Start Date:</span>
+                        <span className="font-medium text-blue-900">{new Date(selectedClient.treatmentJourney.startDate).toLocaleDateString()}</span>
+                      </div>
+                      <div>
+                        <span className="text-blue-700">Current Phase:</span>
+                        <span className="font-medium text-blue-900">{selectedClient.treatmentJourney.currentPhase}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="font-medium text-blue-900 mb-2">Completed Milestones</h4>
+                        <ul className="space-y-2">
+                          {selectedClient.treatmentJourney.milestones.map((milestone, index) => (
+                            <li key={index} className="flex items-center text-sm">
+                              <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                              <span className="text-blue-700">{milestone}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium text-blue-900 mb-2">Next Milestone</h4>
+                        <div className="flex items-center text-sm">
+                          <Target className="h-4 w-4 text-orange-600 mr-2" />
+                          <span className="text-blue-700">{selectedClient.treatmentJourney.nextMilestone}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* AI Insights */}
+                <div className="lg:col-span-2">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">AI Insights</h3>
+                  <div className="space-y-3">
+                    {selectedClient.aiInsights.map((insight, index) => (
+                      <div key={index} className="flex items-start p-3 bg-gray-50 rounded-lg">
+                        <Brain className="h-5 w-5 text-blue-600 mr-3 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">{insight}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-4 pt-6 border-t">
+                <button className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+                  <Video className="h-5 w-5" />
+                  Start Virtual Session
+                </button>
+                <button className="flex-1 bg-purple-500 hover:bg-purple-600 text-white font-medium py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+                  <Edit className="h-5 w-5" />
+                  Edit Treatment Plan
+                </button>
+                <button className="flex-1 bg-green-500 hover:bg-green-600 text-white font-medium py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Generate AI Report
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* AI Report Modal */}
+      {selectedReport && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <motion.div
+            className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">AI Report: {selectedReport.clientName}</h2>
+                <button
+                  onClick={() => setSelectedReport(null)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {/* Detailed Screening Results */}
+                <div className="bg-blue-50 p-6 rounded-lg">
+                  <h3 className="text-lg font-semibold text-blue-900 mb-4">Screening Analysis</h3>
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <div className="text-3xl font-bold text-blue-600">{selectedReport.screeningResults.score}</div>
+                      <div className="text-blue-700">Screening Score</div>
+                    </div>
+                    <div>
+                      <div className="text-3xl font-bold text-blue-600">{selectedReport.screeningResults.riskLevel}</div>
+                      <div className="text-blue-700">Risk Level</div>
+                    </div>
+                  </div>
+                  <div className="text-blue-600 mt-4">
+                    Assessment Date: {new Date(selectedReport.screeningResults.date).toLocaleDateString()}
+                  </div>
+                </div>
+
+                {/* Detailed Chatbot Analysis */}
+                <div className="bg-green-50 p-6 rounded-lg">
+                  <h3 className="text-lg font-semibold text-green-900 mb-4">Chatbot Interaction Analysis</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-green-700">Overall Sentiment:</span>
+                      <span className={`text-2xl font-bold ${
+                        selectedReport.chatbotAnalysis.sentiment === 'Positive' ? 'text-green-600' :
+                        selectedReport.chatbotAnalysis.sentiment === 'Neutral' ? 'text-yellow-600' :
+                        'text-red-600'
+                      }`}>
+                        {selectedReport.chatbotAnalysis.sentiment}
+                      </span>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-medium text-green-900 mb-2">Topics Discussed</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedReport.chatbotAnalysis.topics.map((topic, index) => (
+                          <span key={index} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                            {topic}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-6">
+                      <div>
+                        <div className="text-2xl font-bold text-green-600">{selectedReport.chatbotAnalysis.frequency}</div>
+                        <div className="text-green-700">Total Interactions</div>
+                      </div>
+                      <div>
+                        <div className="text-green-700">Last Interaction</div>
+                        <div className="text-lg font-medium text-green-900">
+                          {new Date(selectedReport.chatbotAnalysis.lastInteraction).toLocaleDateString()}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Detailed Recommendations */}
+                <div className="bg-purple-50 p-6 rounded-lg">
+                  <h3 className="text-lg font-semibold text-purple-900 mb-4">AI-Generated Recommendations</h3>
+                  <ul className="space-y-3">
+                    {selectedReport.recommendations.map((rec, index) => (
+                      <li key={index} className="flex items-start p-3 bg-white rounded-lg">
+                        <CheckCircle className="h-5 w-5 text-purple-600 mr-3 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">{rec}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex gap-4 pt-6 border-t">
+                <button className="bg-purple-500 hover:bg-purple-600 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center gap-2">
+                  <Download className="h-5 w-5" />
+                  Download Full Report
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </div>
+  )
+}
