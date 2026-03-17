@@ -605,6 +605,122 @@ export default function ClientDashboard() {
           </div>
         )
 
+      case 'treatment-journey':
+        return (
+          <div className="space-y-8">
+            {/* Treatment Journey Header */}
+            <div className="bg-gradient-to-r from-primary-500 to-purple-600 p-8 rounded-3xl text-white">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-3xl font-bold mb-2">Your Treatment Journey</h2>
+                  <p className="text-primary-100">Started: {new Date(treatmentJourney.startDate).toLocaleDateString()}</p>
+                </div>
+                <div className="bg-white/20 backdrop-blur-sm p-6 rounded-2xl">
+                  <div className="text-center">
+                    <Award className="h-8 w-8 mx-auto mb-2" />
+                    <div className="text-2xl font-bold">{treatmentJourney.milestones.filter(m => m.completed).length}</div>
+                    <div className="text-sm">Milestones Completed</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Treatment Phases */}
+            <div className="bg-white p-8 rounded-3xl shadow-sm">
+              <h3 className="text-xl font-bold text-slate-900 mb-6">Treatment Phases</h3>
+              <div className="space-y-4">
+                {treatmentJourney.phases.map((phase, index) => (
+                  <div key={phase.name} className="flex items-center gap-4 p-4 rounded-2xl border border-slate-100">
+                    <div className={`p-3 rounded-xl ${
+                      phase.completed ? 'bg-success-100' : 'bg-slate-100'
+                    }`}>
+                      <phase.icon className={`h-6 w-6 ${
+                        phase.completed ? 'text-success-600' : 'text-slate-400'
+                      }`} />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-slate-900">{phase.name}</h4>
+                      <p className="text-sm text-slate-500">
+                        {phase.completed ? `Completed: ${new Date(phase.date).toLocaleDateString()}` : 'Upcoming'}
+                      </p>
+                    </div>
+                    {phase.completed && (
+                      <CheckCircle className="h-6 w-6 text-success-500" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Milestones */}
+            <div className="bg-white p-8 rounded-3xl shadow-sm">
+              <h3 className="text-xl font-bold text-slate-900 mb-6">Achievement Milestones</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                {treatmentJourney.milestones.map((milestone) => (
+                  <div key={milestone.id} className={`p-6 rounded-2xl border-2 ${
+                    milestone.completed ? 'bg-success-50 border-success-200' : 'bg-slate-50 border-slate-200'
+                  }`}>
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-lg ${
+                          milestone.completed ? 'bg-success-100' : 'bg-slate-200'
+                        }`}>
+                          <Award className={`h-5 w-5 ${
+                            milestone.completed ? 'text-success-600' : 'text-slate-400'
+                          }`} />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-slate-900">{milestone.title}</h4>
+                          <p className="text-sm text-slate-500">
+                            {milestone.completed ? new Date(milestone.date).toLocaleDateString() : 'In Progress'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-primary-600">{milestone.points}</div>
+                        <div className="text-xs text-slate-500">points</div>
+                      </div>
+                    </div>
+                    {milestone.completed ? (
+                      <div className="bg-success-100 text-success-700 px-3 py-1 rounded-full text-xs font-bold w-fit">
+                        Completed
+                      </div>
+                    ) : (
+                      <div className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold w-fit">
+                        In Progress
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Follow-up Schedule */}
+            <div className="bg-white p-8 rounded-3xl shadow-sm">
+              <h3 className="text-xl font-bold text-slate-900 mb-6">Follow-up Schedule</h3>
+              <div className="space-y-4">
+                {followUpSchedule.map((followUp) => (
+                  <div key={followUp.id} className="flex items-center justify-between p-4 rounded-2xl border border-slate-100">
+                    <div className="flex items-center gap-4">
+                      <div className={`p-3 rounded-xl bg-${followUp.color}-100`}>
+                        <CalendarDays className={`h-6 w-6 text-${followUp.color}-600`} />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-900">{followUp.type}</h4>
+                        <p className="text-sm text-slate-500">{followUp.frequency} • Next: {followUp.nextDue}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-slate-900">{Math.round(followUp.completed * 100)}%</div>
+                      <div className="text-sm text-slate-500">Completed</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )
+
       case 'exercises':
         return (
           <div className="space-y-8">
