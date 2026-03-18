@@ -1,36 +1,36 @@
 # MindLink: AI-powered Mental Health Care Platform
 
-## 🧠 Overview
+## Overview
 
 MindLink is a comprehensive AI-powered mental health platform designed to provide accessible, affordable, and personalized care by combining AI-driven pre-assessment, virtual counseling, and an integrated appointment system in one solution.
 
-## ✨ Key Features
+## Key Features
 
-### 🤖 AI-Powered Mental Health Screening
+### AI-Powered Mental Health Screening
 - **Free Assessment**: Comprehensive mental health screening using advanced AI algorithms
 - **Risk Level Classification**: Determines risk levels (Mild, Moderate, Severe) with instant recommendations
 - **Personalized Insights**: AI-generated insights and treatment recommendations
 - **Privacy-First**: HIPAA-compliant with secure data handling
 
-### 👥 Smart Counseling System
+### Smart Counseling System
 - **Expert Counselors**: Licensed professionals with AI-enhanced insights
 - **Flexible Sessions**: Virtual and in-person appointment options
 - **Smart Scheduling**: Intelligent booking system with real-time availability
 - **AI Reports**: Counselors access AI-generated patient reports for data-driven care
 
-### 📊 Progress Tracking & Analytics
+### Progress Tracking & Analytics
 - **Real-time Monitoring**: Track mental health progress over time
 - **AI Analytics**: Advanced analytics and insights for counselors
 - **Patient Dashboard**: Comprehensive progress tracking and resource access
 - **Outcome Measurement**: Data-driven treatment effectiveness tracking
 
-### 💰 Freemium Model
+### Freemium Model
 - **Free Screening**: AI assessment available at no cost
 - **Affordable Care**: Competitive pricing for counseling sessions
 - **Financial Assistance**: Support programs for those in need
 - **Insurance Integration**: Seamless insurance processing
 
-## 🚀 Technology Stack
+## Technology Stack
 
 - **Frontend**: Next.js 14, React 18, TypeScript
 - **Styling**: Tailwind CSS, Framer Motion
@@ -39,7 +39,7 @@ MindLink is a comprehensive AI-powered mental health platform designed to provid
 - **Forms**: React Hook Form
 - **Date Handling**: date-fns
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 mindlink/
@@ -61,7 +61,7 @@ mindlink/
 └── README.md               # Project documentation
 ```
 
-## 🛠️ Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 - Node.js 18+ 
@@ -95,7 +95,7 @@ mindlink/
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
 
-## 🎯 Core Functionality
+## Core Functionality
 
 ### 1. AI Mental Health Screening (`/screening`)
 - **8-question assessment** covering mood, sleep, anxiety, safety, energy, cognition, social, and physical symptoms
@@ -163,7 +163,7 @@ mindlink/
 - **Outcome Improvement**: Data-driven approach to treatment effectiveness
 - **Accessibility**: Reaching underserved populations
 
-## 🚀 Future Enhancements
+## Future Enhancements
 
 ### Planned Features
 - **Mobile App**: Native iOS and Android applications
@@ -179,7 +179,7 @@ mindlink/
 - **Voice Analysis**: Emotion detection from voice patterns
 - **Predictive Analytics**: Early warning systems for relapse prevention
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions to improve MindLink! Please read our contributing guidelines and submit pull requests for any enhancements.
 
@@ -189,11 +189,11 @@ We welcome contributions to improve MindLink! Please read our contributing guide
 - Write comprehensive tests
 - Update documentation for new features
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🆘 Support
+## Support
 
 ### Emergency Resources
 - **Crisis Hotline**: 988 (National Suicide Prevention Lifeline)
